@@ -14,8 +14,18 @@
 ## Запуск
 ```bash
 python -m venv venv
-venv\Scripts\activate   # Windows
+```
+
+# Windows
+```bash
+venv\Scripts\activate
+```
+
 # или
+
+# macOS / Linux
+
+```bash
 source venv/bin/activate   # macOS / Linux
 ```
 
