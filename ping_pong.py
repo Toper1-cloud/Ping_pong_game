@@ -2,7 +2,6 @@ from pygame import *
 from random import randint, uniform, choice
 import time as py_time
 
-
 width = 1540   # длина окна
 height = 800  # высота окна
 window = display.set_mode((width, height))
@@ -11,7 +10,6 @@ font.init()
 mixer.init()
 
 restart_ready = False
-
 
 font_size = 20
 font_name = 'Arial'
@@ -41,8 +39,6 @@ goal_scored = False
 countdown_start = 0
 winner_text = ''
 
-
-
 class GameSprite(sprite.Sprite):
     def __init__(self, picture, x, y, speed=1, w=100, h=100):
         super().__init__()
@@ -58,8 +54,6 @@ class GameSprite(sprite.Sprite):
     def reset(self):
         window.blit(self.sprite, (self.rect.x, self.rect.y))
 
-
-
 class Player(GameSprite):
     def __init__(self, x, y, up_key, down_key, f_t=1):
         if f_t == 1:
@@ -74,8 +68,6 @@ class Player(GameSprite):
         self.x_copy = x
         self.y_copy = y
 
-
-
     def goes(self):
         key_pressed = key.get_pressed()
         if key_pressed[self.up_key] and self.rect.y > 0: #вверх
@@ -83,11 +75,9 @@ class Player(GameSprite):
         if key_pressed[self.down_key] and self.rect.bottom < height: #вниз
             self.rect.y += 15
 
-
     def starts(self):
         self.rect.x = self.x_copy
         self.rect.y = self.y_copy
-
 
 class Ball(GameSprite):
     def __init__(self):
@@ -110,7 +100,6 @@ class Ball(GameSprite):
                 elif self.dx > 0 and self.rect.right >= player.rect.left:
                     self.dx = -abs(self.dx)
 
-
 background = GameSprite('fone.jpg', 0, 0, 1, width, height)
 
 player_left = Player(100, 540, K_w, K_s, f_t=1)
@@ -125,7 +114,6 @@ player_s.add(player_right)
 
 mixer.music.load('Main_Theme.mp3')
 mixer.music.play()
-
 
 restart_ready = False
 game = True
@@ -148,7 +136,6 @@ while game:
             seconds_left = (3000 - elapsed + 999) // 1000   #округление вверх: 3, 2, 1
             timer_text = game_font.render(str(seconds_left), True, black_color)
             window.blit(timer_text, timer_text.get_rect(center=(width // 2, height // 2)))
-
 
     elif not game_over:
         for player in players:
@@ -179,15 +166,9 @@ while game:
                 countdown_active = True
                 countdown_start = time.get_ticks()
 
-
-
-
-
-
     if game_over:
         text = game_font.render(winner_text + '  Пробел — заново', True, color_tag)
         window.blit(text, text.get_rect(center=(width // 2, height // 2)))
-
 
     for e in event.get():
         if e.type == QUIT:
