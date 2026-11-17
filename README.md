@@ -11,7 +11,18 @@
 - Python 3
 - pygame ( pygame-ce )
 
-## Запуск
+## Установка
+
+```bash
+pip install pygame
+```
+
+## или
+```bash
+pip install pygame-ce
+```
+
+## Подготовка
 ```bash
 python -m venv venv
 ```
@@ -27,6 +38,11 @@ venv\Scripts\activate
 
 ```bash
 source venv/bin/activate   # macOS / Linux
+```
+
+## Запуск
+```bash
+python ping_pong.py
 ```
 
 ## Автор
