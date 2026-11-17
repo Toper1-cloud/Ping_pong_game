@@ -13,9 +13,6 @@ mixer.init()
 restart_ready = False
 
 
-
-#rocket_normal = transform.scale(image.load('rocketa.png'), (50, 70))
-
 font_size = 20
 font_name = 'Arial'
 
@@ -35,6 +32,16 @@ clock = time.Clock()
 FPS = 120
 
 loser_text = ''
+score_left = 0
+score_right = 0
+
+WIN_SCORE = 5
+countdown_active = False
+goal_scored = False
+countdown_start = 0
+winner_text = ''
+
+
 
 class GameSprite(sprite.Sprite):
     def __init__(self, picture, x, y, speed=1, w=100, h=100):
@@ -79,7 +86,7 @@ class Player(GameSprite):
 
     def starts(self):
         self.rect.x = self.x_copy
-        self.rect.y = self.x_copy
+        self.rect.y = self.y_copy
 
 
 class Ball(GameSprite):
@@ -116,8 +123,8 @@ player_s = sprite.Group()
 player_s.add(player_left)
 player_s.add(player_right)
 
-#mixer.music.load('Main_Theme.mp3')
-#mixer.music.play()
+mixer.music.load('Main_Theme.mp3')
+mixer.music.play()
 
 
 restart_ready = False
@@ -126,39 +133,60 @@ while game:
     background.reset()
     for player in players:
         player.reset()
-        player.goes()
     ball.reset()
 
+    score_text = game_font.render(f'{score_left} : {score_right}', True, black_color)
+    window.blit(score_text, score_text.get_rect(center=(width // 2, 40)))
 
-    if not game_over:
+    if countdown_active:
+        for player in players:      # двигаемся, пока ждём подачи
+            player.goes()
+        elapsed = time.get_ticks() - countdown_start
+        if elapsed >= 3000:
+            countdown_active = False
+        else:
+            seconds_left = (3000 - elapsed + 999) // 1000   #округление вверх: 3, 2, 1
+            timer_text = game_font.render(str(seconds_left), True, black_color)
+            window.blit(timer_text, timer_text.get_rect(center=(width // 2, height // 2)))
+
+
+    elif not game_over:
         for player in players:
             player.goes()
         ball.update(players)
 
-        if ball.rect.right < 0: #мяч вылетел слева
-            game_over = True
-            loser_text = 'Левый игрок проиграл!'
-        elif ball.rect.left > width:    #мяч вылетел справа
-            game_over = True
-            loser_text = 'Правый игрок проиграл!'
-        else:
-            pass
+        if ball.rect.right < 0:
+            score_right += 1
+            goal_scored = True
+        elif ball.rect.left > width:
+            score_left += 1
+            goal_scored = True
+
+        if goal_scored:
+            goal_scored = False
+            for player in players:
+                player.starts()
+            if score_right >= WIN_SCORE:
+                game_over = True
+                winner_text = 'Правый игрок победил!'
+                color_tag = red_color
+            elif score_left >= WIN_SCORE:
+                game_over = True
+                winner_text = 'Левый игрок победил!'
+                color_tag = blue
+            else:
+                ball = Ball()
+                countdown_active = True
+                countdown_start = time.get_ticks()
+
+
+
+
 
 
     if game_over:
-        text = game_font.render(loser_text + '  Пробел — заново', True, red_color)
+        text = game_font.render(winner_text + '  Пробел — заново', True, color_tag)
         window.blit(text, text.get_rect(center=(width // 2, height // 2)))
-
-
-
-
-
-
-
-
-
-
-
 
 
     for e in event.get():
@@ -171,11 +199,15 @@ while game:
     if game_over and restart_ready:
         game_over = False
         restart_ready = False
-        loser_text = ''
+        for player in players:
+            player.starts()
+        winner_text = ''
+        score_left = 0
+        score_right = 0
         ball = Ball()
-
         mixer.music.rewind()
-        mixer.music.play() 
+        mixer.music.play()
+
     clock.tick(FPS)
     display.flip()
 quit()
